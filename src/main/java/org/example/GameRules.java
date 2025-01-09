@@ -1,6 +1,8 @@
 package org.example;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -23,9 +25,9 @@ public abstract class GameRules {
 
     public GameRules() {
         difficulty = new HashMap<>();
-        difficulty.put("Facile", 5);
+        difficulty.put("Facile", 10);
         difficulty.put("Moyen", 7);
-        difficulty.put("Difficile", 10);
+        difficulty.put("Difficile", 5);
     }
 
     private static List<@NotNull String> loadWords(String filePath) throws IOException {
@@ -45,7 +47,35 @@ public abstract class GameRules {
     }
 
     protected Integer getDifficultyLevel() throws IOException {
-    return null;
+        logger.info("Sélection du niveau de difficulté par le joueur");
+        try {
+            System.out.println("""
+                    Veuillez choisir un niveau de difficulté pour la partie (Mot exacte !) :\
+                    
+                    \t Facile - (10 points de vie). \
+                    
+                    \t Moyen - (7 points de vie). \
+                    
+                    \t Difficile - (5 points de vie). \
+                    """);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String response = reader.readLine();
+
+            if (response.equals("Facile")) {
+                lifePoints = difficulty.get(response);
+            } else if (response.equals("Moyen")) {
+                lifePoints = difficulty.get(response);
+            } else if (response.equals("Difficile")) {
+                lifePoints = difficulty.get(response);
+            } else {
+                System.out.println("Veuillez choisir entre : 'Facile' - 'Moyen' - 'Difficile' !");
+                this.getDifficultyLevel();
+            }
+            System.out.printf("Merci ! Vous avez choisi le niveau de difficulté : %s, vous aurez donc : %d points de vie !%n", response, lifePoints);
+            return lifePoints;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected String getRandomWord() {
@@ -75,5 +105,5 @@ public abstract class GameRules {
         this.IsOver = isOver;
     }
 
-    public abstract void demarrerPartie();
+    public abstract void demarrerPartie() throws IOException;
 }
