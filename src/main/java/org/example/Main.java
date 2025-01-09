@@ -1,7 +1,6 @@
 package org.example;
 
 import java.io.IOException;
-
 /**
  * Classe principale de l'application.
  * <p>

@@ -9,9 +9,11 @@ public class Game extends GameRules {
 
     @Override
     public void demarrerPartie() {
-        System.out.println("Bienvenue dans le jeu du pendu !");
-        System.out.println("Le mot aléatoire est : " + getRandomWord());
+        System.out.println("Bienvenue dans le jeu du pendu :");
+        System.out.println("Le mot aléatoire à une longueur de : " + getRandomWord().length() + " caractère !");
+        System.out.println("Bon jeu !");
     }
+
 
 
 }
