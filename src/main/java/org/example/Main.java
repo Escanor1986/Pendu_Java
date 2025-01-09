@@ -30,7 +30,7 @@ public class Main {
      *
      * @param args Les arguments passés au programme depuis la ligne de commande.
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Game game = new Game();
 
         game.demarrerPartie();

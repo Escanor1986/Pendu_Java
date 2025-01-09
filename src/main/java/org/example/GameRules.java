@@ -47,17 +47,19 @@ public abstract class GameRules {
     }
 
     protected Integer getDifficultyLevel() throws IOException {
-        logger.info("Sélection du niveau de difficulté par le joueur");
         try {
+            logger.info("Sélection du niveau de difficulté par le joueur");
             System.out.println("""
                     Veuillez choisir un niveau de difficulté pour la partie (Mot exacte !) :\
                     
-                    \t Facile - (10 points de vie). \
+                    \t Facile - (10 ❤️). \
                     
-                    \t Moyen - (7 points de vie). \
+                    \t Moyen - (7 ❤️). \
                     
-                    \t Difficile - (5 points de vie). \
+                    \t Difficile - (5 ❤️). \
                     """);
+
+            logger.info("Début capture de l'entrée utilisateur dans la console");
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String response = reader.readLine();
 
@@ -69,12 +71,45 @@ public abstract class GameRules {
                 lifePoints = difficulty.get(response);
             } else {
                 System.out.println("Veuillez choisir entre : 'Facile' - 'Moyen' - 'Difficile' !");
+                Thread.sleep(1000);
                 this.getDifficultyLevel();
             }
-            System.out.printf("Merci ! Vous avez choisi le niveau de difficulté : %s, vous aurez donc : %d points de vie !%n", response, lifePoints);
+            System.out.printf("Merci ! Vous avez choisi le niveau de difficulté : %s, vous aurez donc : %d ❤\uFE0F !%n", response, lifePoints);
+            logger.debug("Choix du niveau de difficulté : {}, et nombres de points de vie : {}.", response, lifePoints);
             return lifePoints;
         } catch (Exception e) {
+            logger.error("Erreur lors de la sélection du niveau de difficulté : {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        }
+    }
+
+    protected void attemptToWin() {
+        resultMap = new HashMap<Integer, String>();
+        charAttempt = new TreeSet<Character>();
+        while (lifePoints > 0) {
+            logger.info("Début des tentatives pour trouver le mot caché");
+            try {
+                System.out.printf("Vous disposez de %s tentatives pour trouver le mot mystère :", lifePoints);
+
+                logger.info("Entrée d'une lettre par l'utilisateur");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                String response = reader.readLine();
+                char letter = response.charAt(0);
+
+                // Pour vérifier si une lettre est présente dans le mot aléatoire
+                // Il faut d'abord convertir char en String
+                if (randomWord.contains(String.valueOf(letter))) {
+                    if (charAttempt.contains(letter)) {
+                        System.out.printf("Vous avez déjà essayé la lettre %d !", letter);
+                        break;
+                    } else {
+                        resultMap.put(randomWord.indexOf(String.valueOf(letter)), String.valueOf(letter));
+
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -105,5 +140,5 @@ public abstract class GameRules {
         this.IsOver = isOver;
     }
 
-    public abstract void demarrerPartie() throws IOException;
+    public abstract void demarrerPartie() throws IOException, InterruptedException;
 }

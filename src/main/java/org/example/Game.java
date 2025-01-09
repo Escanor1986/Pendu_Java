@@ -15,12 +15,17 @@ public class Game extends GameRules {
     }
 
     @Override
-    public void demarrerPartie() throws IOException {
+    public void demarrerPartie() throws IOException, InterruptedException {
+
         logger.info("Démarrage de la partie.");
         System.out.println("Bienvenue dans le jeu du pendu :");
         System.out.println("Le mot aléatoire à une longueur de : " + getRandomWord().length() + " caractère !");
         System.out.println("Bon jeu !");
+        Thread.sleep(1000);
+        logger.info("Sélection du niveau de difficulté de la partie");
         getDifficultyLevel();
+        Thread.sleep(1000);
+
     }
 
 
