@@ -12,8 +12,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Classe abstraite définissant les règles du jeu du pendu.
+ * <p>
+ * Cette classe contient les propriétés et les comportements communs à toutes
+ * les parties de pendu. Les classes qui héritent de cette classe doivent
+ * implémenter la méthode {@link #demarrerPartie()}.
+ * </p>
+ */
 public abstract class GameRules {
-    protected boolean IsOver;
     protected HashMap<String, Integer> difficulty;
     protected Integer lifePoints;
     protected List<String> listOfWords;
@@ -23,6 +30,12 @@ public abstract class GameRules {
 
     private static final Logger logger = LogManager.getLogger(GameRules.class);
 
+    /**
+     * Constructeur de la classe GameRules.
+     * <p>
+     * Initialise les niveaux de difficulté et leurs points de vie associés.
+     * </p>
+     */
     public GameRules() {
         difficulty = new HashMap<>();
         difficulty.put("Facile", 10);
@@ -30,6 +43,13 @@ public abstract class GameRules {
         difficulty.put("Difficile", 5);
     }
 
+    /**
+     * Charge la liste des mots depuis un fichier.
+     *
+     * @param filePath Chemin du fichier contenant les mots.
+     * @return Une liste de mots.
+     * @throws IOException Si une erreur d'entrée/sortie survient.
+     */
     private static List<@NotNull String> loadWords(String filePath) throws IOException {
         try {
             return Files.readAllLines(
@@ -46,6 +66,12 @@ public abstract class GameRules {
         }
     }
 
+    /**
+     * Permet au joueur de choisir un niveau de difficulté.
+     *
+     * @return Le nombre de points de vie correspondant au niveau choisi.
+     * @throws IOException Si une erreur d'entrée/sortie survient.
+     */
     protected Integer getDifficultyLevel() throws IOException {
         try {
             logger.info("Sélection du niveau de difficulté par le joueur");
@@ -83,28 +109,51 @@ public abstract class GameRules {
         }
     }
 
+    /**
+     * Effectue les tentatives du joueur pour deviner le mot.
+     * <p>
+     * Cette méthode gère les entrées du joueur, les vérifications de lettres,
+     * et la mise à jour des points de vie.
+     * </p>
+     */
     protected void attemptToWin() {
         resultMap = new HashMap<Integer, String>();
         charAttempt = new TreeSet<Character>();
-        while (lifePoints > 0) {
+        while (lifePoints > 0 || charAttempt.size() < randomWord.length() - 1) {
             logger.info("Début des tentatives pour trouver le mot caché");
             try {
-                System.out.printf("Vous disposez de %s tentatives pour trouver le mot mystère :", lifePoints);
+                System.out.printf("Vous disposez de %s tentatives pour trouver le mot mystère : \n", lifePoints);
 
                 logger.info("Entrée d'une lettre par l'utilisateur");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 String response = reader.readLine();
+
+                logger.info("Vérifie que l'utilisateur n'entre pas autre chose qu'une lettre.");
+                if (response == null || response.length() != 1 || !Character.isLetter(response.charAt(0))) {
+                    System.out.println("Veuillez entrer une seule lettre valide !");
+                    continue;
+                }
+
                 char letter = response.charAt(0);
 
-                // Pour vérifier si une lettre est présente dans le mot aléatoire
-                // Il faut d'abord convertir char en String
+                logger.debug("On test la présence de l'entrée utilisateur : {} dans le mot mystère : {}. \n", letter, randomWord);
                 if (randomWord.contains(String.valueOf(letter))) {
+                    logger.debug("On test la présence de l'entrée utilisateur : {} dans la liste des lettres déjà tentée : {}. \n", letter, charAttempt.contains(letter));
                     if (charAttempt.contains(letter)) {
-                        System.out.printf("Vous avez déjà essayé la lettre %d !", letter);
-                        break;
+                        System.out.printf("Vous avez déjà essayé la lettre %d ! \n", letter);
+                        Thread.sleep(1000);
                     } else {
-                        resultMap.put(randomWord.indexOf(String.valueOf(letter)), String.valueOf(letter));
-
+                        int letterRandomWordIndex = randomWord.indexOf(String.valueOf(letter)) + 1;
+                        System.out.printf("Bravo ! La lettre '%s' se trouve bien dans le mot mystère à l'emplacement '%d' ! \n", letter, letterRandomWordIndex);
+                        resultMap.put(letterRandomWordIndex, String.valueOf(letter));
+                        charAttempt.add(letter);
+                    }
+                } else {
+                    lifePoints -= 1;
+                    charAttempt.add(letter);
+                    System.out.printf("Oups ! Le mot mystère ne contient pas la lettre '%s' ! Il vous reste %d tentatives ! \n", letter, lifePoints);
+                    if (lifePoints == 0) {
+                       System.out.println("Perdu ! Désolé :-) Retentez une partie !");
                     }
                 }
             } catch (Exception e) {
@@ -113,6 +162,11 @@ public abstract class GameRules {
         }
     }
 
+    /**
+     * Sélectionne un mot aléatoire depuis la liste des mots.
+     *
+     * @return Un mot aléatoire.
+     */
     protected String getRandomWord() {
         try {
             listOfWords = loadWords("words.txt");
@@ -125,6 +179,7 @@ public abstract class GameRules {
                 throw new IllegalStateException("La liste de mots est vide !");
             }
             logger.debug("Mot aléatoire choisi, {}", randomWord);
+           // System.out.printf("Mot aléatoire choisi, %s \n", randomWord); // A EFFACER, UNIQUEMENT POUR TESTER !
             return randomWord;
         } catch (IOException e) {
             logger.error("Erreur lors du chargement du fichier de mots : {}", e.getMessage(), e);
@@ -132,13 +187,11 @@ public abstract class GameRules {
         }
     }
 
-    public boolean isGameOver() {
-        return IsOver;
-    }
-
-    public void setGameOver(boolean isOver) {
-        this.IsOver = isOver;
-    }
-
+    /**
+     * Méthode abstraite pour démarrer une partie.
+     *
+     * @throws IOException Si une erreur d'entrée/sortie survient.
+     * @throws InterruptedException Si une interruption du thread survient.
+     */
     public abstract void demarrerPartie() throws IOException, InterruptedException;
 }

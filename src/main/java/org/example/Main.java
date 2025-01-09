@@ -1,6 +1,7 @@
 package org.example;
 
 import java.io.IOException;
+
 /**
  * Classe principale de l'application.
  * <p>
@@ -21,19 +22,15 @@ public class Main {
     /**
      * Point d'entrée principal de l'application.
      * <p>
-     * Cette méthode exécute deux démonstrations :
-     * <ul>
-     *     <li>Une addition de deux nombres entiers</li>
-     *     <li>Un affichage de plusieurs chaînes de caractères</li>
-     * </ul>
+     * Cette méthode démarre une partie de pendu.
      * </p>
      *
      * @param args Les arguments passés au programme depuis la ligne de commande.
+     * @throws IOException Si une erreur d'entrée/sortie survient.
+     * @throws InterruptedException Si une interruption du thread survient.
      */
     public static void main(String[] args) throws IOException, InterruptedException {
         Game game = new Game();
-
         game.demarrerPartie();
     }
-
 }
