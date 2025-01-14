@@ -1,6 +1,8 @@
 package org.example;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Classe principale de l'application.
@@ -30,7 +32,22 @@ public class Main {
      * @throws InterruptedException Si une interruption du thread survient.
      */
     public static void main(String[] args) throws IOException, InterruptedException {
-        Game game = new Game();
-        game.demarrerPartie();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        boolean replay = true;
+
+        while (replay) {
+            Game game = new Game();
+            game.demarrerPartie();
+
+            System.out.println("Souhaitez-vous rejouer une autre partie : OUI ou NON (en toutes lettres majuscules svp) ?");
+            String response = reader.readLine();
+
+            if ("NON".equals(response)) {
+                replay = false;
+                System.out.println("Merci d'avoir joué ! À bientôt.");
+            } else if (!"OUI".equals(response)) {
+                System.out.println("Veuillez entrer une réponse valide (OUI ou NON).");
+            }
+        }
     }
 }

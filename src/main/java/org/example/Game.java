@@ -43,12 +43,14 @@ public class Game extends GameRules {
     public void demarrerPartie() throws IOException, InterruptedException {
         logger.info("Démarrage de la partie.");
         System.out.println("Bienvenue dans le jeu du pendu :");
-        System.out.println("Le mot aléatoire à une longueur de : " + getRandomWord().length() + " caractère !");
+        this.getRandomWord();
+        System.out.println("Le mot aléatoire à une longueur de : " + this.randomWord.size() + " caractères !");
+        this.initializeCharToGuess(this.randomWord);
         System.out.println("Bon jeu !");
         Thread.sleep(1000);
         logger.info("Sélection du niveau de difficulté de la partie");
-        getDifficultyLevel();
+        this.getDifficultyLevel();
         Thread.sleep(1000);
-        attemptToWin();
+        this.attemptToWin();
     }
 }
