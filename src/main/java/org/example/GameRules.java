@@ -198,7 +198,7 @@ public abstract class GameRules {
                 throw new IllegalStateException("La liste de mots est vide !");
             }
             logger.debug("Mot aléatoire choisi, {}", this.randomWord);
-            System.out.printf("Mot aléatoire choisi : %s \n", this.randomWord); // A EFFACER, UNIQUEMENT POUR TESTER !
+            // System.out.printf("Mot aléatoire choisi : %s \n", this.randomWord); // A EFFACER, UNIQUEMENT POUR TESTER !
             return this.randomWord;
         } catch (IOException e) {
             logger.error("Erreur lors du chargement du fichier de mots : {}", e.getMessage(), e);
